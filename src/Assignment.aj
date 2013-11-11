@@ -7,6 +7,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public aspect Assignment {
+	
+	public void logger(String message, String fileName) {
+		
+		File textFileName = new File(fileName);
+		try {
+			// Permission Given
+			textFileName.setWritable(true);
+			FileWriter fileWriter 		  = new FileWriter(textFileName, true);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+			// Wring to text
+			bufferedWriter.write(message);
+			
+			bufferedWriter.newLine();
+			bufferedWriter.close();
+		} catch (IOException e) {
+			System.out.println("Something went wrong while writing in text file.");
+		}		
+	}
 
 	//Task 1
 	before() : initialization (*.new(..)) 
@@ -41,26 +60,15 @@ public aspect Assignment {
 	
 	//Task 2
 	before(Object sender, Object receiver) : call (* *(..)) 
-	   		   && !within(Assignment)
-	   		   && !cflow(call (* java.*.*.*(..)))
-	   		   && this(sender)
-	   		   && target(receiver) {
+									   		 && !within(Assignment)
+									   		 && !cflow(call (* java.*.*.*(..)))
+									   		 && this(sender)
+									   		 && target(receiver) {
 		
-		File textFileName = new File("call.txt");
-		try {
-			// Permission Given
-			textFileName.setWritable(true);
-			FileWriter fileWriter 		  = new FileWriter(textFileName, true);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-			// Wring to text
-			bufferedWriter.write( "calls("+sender.hashCode()+","+sender.getClass().getName()+","+receiver.hashCode()+","+receiver.getClass().getName()+","+ thisJoinPoint.getSignature()+","+System.currentTimeMillis() / 1000L + ")");
-			
-			bufferedWriter.newLine();
-			bufferedWriter.close();
-		} catch (IOException e) {
-			System.out.println("Something went wrong while writing in text file.");
-		}
+		String message = "calls("+sender.hashCode()+","+sender.getClass().getName()+","+receiver.hashCode()+","+receiver.getClass().getName()+","+ thisJoinPoint.getSignature()+","+System.currentTimeMillis() / 1000L + ")";		
+		this.logger(message, "call.txt");
+		
+		
 		
 	}
 	
@@ -115,7 +123,7 @@ public aspect Assignment {
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 			// Wring to text
-			bufferedWriter.write("termination('" +thisJoinPoint.getSignature()+"'," + thisEnclosingJoinPointStaticPart.hashCode()+"," +System.currentTimeMillis() / 1000L + ")");			
+			bufferedWriter.write("termination('" +thisJoinPoint.getSignature()+"'," + thisJoinPoint.hashCode()+"," +System.currentTimeMillis() / 1000L + ")");			
 			bufferedWriter.newLine();
 			bufferedWriter.close();
 		} catch (IOException e) {
