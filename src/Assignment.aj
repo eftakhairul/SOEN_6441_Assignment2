@@ -40,11 +40,11 @@ public aspect Assignment {
 	
 	
 	//Task 2
-	before(Object p, Object t) : call (* *(..)) 
+	before(Object sender, Object receiver) : call (* *(..)) 
 	   		   && !within(Assignment)
 	   		   && !cflow(call (* java.*.*.*(..)))
-	   		   && this(p)
-	   		   && target(t) {
+	   		   && this(sender)
+	   		   && target(receiver) {
 		
 		File textFileName = new File("call.txt");
 		try {
@@ -54,7 +54,7 @@ public aspect Assignment {
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 			// Wring to text
-			bufferedWriter.write( "calls("+p.hashCode()+","+p.getClass().getName()+","+t.hashCode()+","+t.getClass().getName()+","+System.currentTimeMillis() / 1000L + ")");
+			bufferedWriter.write( "calls("+sender.hashCode()+","+sender.getClass().getName()+","+receiver.hashCode()+","+receiver.getClass().getName()+","+ thisJoinPoint.getSignature()+","+System.currentTimeMillis() / 1000L + ")");
 			
 			bufferedWriter.newLine();
 			bufferedWriter.close();
