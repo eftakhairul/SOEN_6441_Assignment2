@@ -10,7 +10,8 @@ public aspect Assignment {
 
 	//Task 1
 	before() : initialization (*.new(..)) 
-			  && !within(Assignment) {
+			  && !within(Assignment)
+			  && !cflow(initialization (java.*.*.new(..))) {
 
 		int instantId 	   		= thisJoinPoint.hashCode();
 		String instantType      = thisJoinPoint.getSignature().getDeclaringTypeName();
@@ -39,9 +40,11 @@ public aspect Assignment {
 	
 	
 	//Task 2
-	before() : call (* *(..)) 
+	before(Object p, Object t) : call (* *(..)) 
 	   		   && !within(Assignment)
-	   		   && !cflow(call (* java.*.*.*(..))) {
+	   		   && !cflow(call (* java.*.*.*(..)))
+	   		   && this(p)
+	   		   && target(t) {
 		
 		File textFileName = new File("call.txt");
 		try {
@@ -51,7 +54,7 @@ public aspect Assignment {
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
 			// Wring to text
-			bufferedWriter.write( "calls("+thisEnclosingJoinPointStaticPart.hashCode()+","+thisEnclosingJoinPointStaticPart.getSignature().getDeclaringTypeName()+","+thisJoinPoint.hashCode()+","+thisJoinPoint.getSignature()+","+System.currentTimeMillis() / 1000L + ")");
+			bufferedWriter.write( "calls("+p.hashCode()+","+p.getClass().getName()+","+t.hashCode()+","+t.getClass().getName()+","+System.currentTimeMillis() / 1000L + ")");
 			
 			bufferedWriter.newLine();
 			bufferedWriter.close();
