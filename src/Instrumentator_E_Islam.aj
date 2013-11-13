@@ -3,11 +3,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public aspect Assignment
+public aspect Instrumentator_E_Islam
 {	
 	//Task 1
 	before() : call(*.new(..)) &&
-			   !within(Assignment) &&
+			   !within(Instrumentator_E_Islam) &&
 			   !cflow(call(java.*.*.new(..))) {
 
 		int instantId 	   		= thisJoinPoint.hashCode();
@@ -25,7 +25,7 @@ public aspect Assignment
 	
 	//Task 2
 	before(Object sender, Object receiver) : call (* *(..)) 
-									   		 && !within(Assignment)
+									   		 && !within(Instrumentator_E_Islam)
 									   		 && !cflow(call (* java.*.*.*(..)))
 									   		 && this(sender)
 									   		 && target(receiver) {
@@ -42,9 +42,10 @@ public aspect Assignment
 	}	
 	
 	//Task 3
-	before() : (execution (* *(..)) || adviceexecution())
-	  		   && !within(Assignment)
-	  		   && !cflow(execution (* java.*.*.*(..))) {
+	before(Object p) : (execution (* *(..)) || adviceexecution())
+	  		           && !within(Instrumentator_E_Islam)
+	  		           && !cflow(execution (* java.*.*.*(..)))
+	  		           && this(p) {
 		
 		int executingObjectId      = thisJoinPoint.hashCode();
 		String executingObjectType = thisJoinPoint.getSignature().getDeclaringTypeName();
@@ -60,9 +61,10 @@ public aspect Assignment
 	}	
 	
 	//Task 4
-	after() : (execution (* *(..)) || adviceexecution())
-	  		   && !within(Assignment)
-	  		   && !cflow(execution (* java.*.*.*(..))) {
+	after(Object p) : (execution (* *(..)) || adviceexecution())
+	  		          && !within(Instrumentator_E_Islam)
+	  		          && !cflow(execution (* java.*.*.*(..)))
+	  		          && this(p) {
 		
 		Object instanceMethod 		= thisJoinPoint.getSignature();
 		int executingInstanceId  	= thisJoinPoint.hashCode();
